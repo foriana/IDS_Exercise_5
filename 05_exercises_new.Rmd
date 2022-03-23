@@ -1,6 +1,6 @@
 ---
 title: 'Weekly Exercises #5'
-author: "Put your name here"
+author: "Felicia Peterson"
 output: 
   html_document:
     keep_md: TRUE
