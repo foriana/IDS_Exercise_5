@@ -120,11 +120,33 @@ single_parent_only_child_household_games_lol <- boardgame_haven %>%
   
 
 ```
-  
+
+```{r}
+data(penguins)
+penguins <- penguins %>% 
+  mutate(AngryBird = mean(bill_length_mm, na.rm = TRUE))
+
+waddles <- penguins %>% 
+  ggplot(aes(x=bill_length_mm, text = AngryBird))+
+  geom_histogram(binwidth= 2, fill="purple4") + 
+  geom_vline(xintercept=mean(penguins$bill_length_mm, na.rm = TRUE), linetype = "dashed", color = "red") + #na.rm=TRUE to remove the na lines
+  labs(title="These Bills Do Not Pay But They're Great Anyway",
+             x = "Bill Length (mm)",
+       y = "Number of Penguins")
+```  
+
+
 ```{r, fig.alt = "An interactive graph of the top 10 games for two players." }
 ggplotly(single_parent_only_child_household_games_lol,
          tooltip = c("text", "x"))
+
 ```
+ 
+```{r, fig.alt =}
+ggplotly(waddles,
+         tooltip = c("text", "x"))
+```
+ 
   2. Use animation to tell an interesting story with the `small_trains` dataset that contains data from the SNCF (National Society of French Railways). These are Tidy Tuesday data! Read more about it [here](https://github.com/rfordatascience/tidytuesday/tree/master/data/2019/2019-02-26).
 
 ```{r}
