@@ -142,7 +142,7 @@ ggplotly(single_parent_only_child_household_games_lol,
 
 ```
  
-```{r, fig.alt =}
+```{r, fig.alt = more text text text}
 ggplotly(waddles,
          tooltip = c("text", "x"))
 ```
@@ -150,6 +150,11 @@ ggplotly(waddles,
   2. Use animation to tell an interesting story with the `small_trains` dataset that contains data from the SNCF (National Society of French Railways). These are Tidy Tuesday data! Read more about it [here](https://github.com/rfordatascience/tidytuesday/tree/master/data/2019/2019-02-26).
 
 ```{r}
+
+small_trains %>% 
+  ggplot(aes(x = ))
+
+
 
 ```
 
@@ -164,16 +169,23 @@ ggplotly(waddles,
 I have started the code for you below. The `complete()` function creates a row for all unique `date`/`variety` combinations. If a variety is not harvested on one of the harvest dates in the dataset, it is filled with a value of 0.
 
 ```{r}
-garden_harvest %>% 
+daily_tomato <- garden_harvest %>% 
   filter(vegetable == "tomatoes") %>% 
   group_by(date, variety) %>% 
   summarize(daily_harvest_lb = sum(weight)*0.00220462) %>% 
   ungroup() %>% 
   complete(variety, 
            date, 
-           fill = list(daily_harvest_lb = 0))
+           fill = list(daily_harvest_lb = 0)) 
+
 ```
 
+```{r}
+daily_tomato %>% 
+  ggplot(aes(x = date, y = daily_harvest_lb)) + 
+  geom_area(aes(fill = variety)) +
+  transition_states(variety)
+```
 
 ## Maps, animation, and movement!
 
