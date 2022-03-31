@@ -286,7 +286,7 @@ ggmap(panama_map) +
   * Put date in the subtitle.   
   * Because there are so many dates, you are going to only do the animation for the the 15th of each month. So, filter only to those dates - there are some lubridate functions that can help you do this.   
   * Use the `animate()` function to make the animation 200 frames instead of the default 100 and to pause for 10 frames on the end frame.   
-  * Use `group = date` in `aes()`.   
+  * Use `group = date` in `aes()`. #what does this mean?  
   * Comment on what you see.  
 
 ```{r}
@@ -301,20 +301,34 @@ covid19_states <- covid19 %>%
   mutate(state = str_to_lower(`state`))
 
 states_map <- map_data("state")
+
+covid_19_state_populations <- covid19_states %>% 
+  left_join(census_pop_est_2018,
+            by = c("state" = "state"))
+
+modified_covid19 <- covid_19_state_populations %>% 
+  mutate(covid_prop = cases/est_pop_2018)  
 ```
 
 
 ```{r, fig.alt="write something here"}
-covid19_states %>% 
-  filter(date(day((15)) %>% 
+covid19 %>% 
+  filter(day(date) == 15) %>% 
+  mutate(state = str_to_lower(state)) %>% 
+  left_join(census_pop_est_2018,
+            by = c("state" = "state")) %>% 
+  mutate(covid_prop = cases/est_pop_2018) %>% 
   ggplot() +
   geom_map(map = states_map,
            aes(map_id = state,
-               fill = cases)) +
+               fill = covid_prop)) +
   expand_limits(x = states_map$long, y = states_map$lat) + 
-  labs(title = "COVID-19 Cases in the United States") + 
+  labs(title = "COVID-19 Cases in the United States",
+       subtitle = "Date: {frame_time}") + 
   theme_map() + 
-  theme(legend.background = element_blank()) 
+  theme(legend.background = element_blank()) +
+  transition_reveal(covid_prop,
+                    state_length = 10)
   
 ```
 
