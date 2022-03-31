@@ -176,15 +176,29 @@ daily_tomato <- garden_harvest %>%
   ungroup() %>% 
   complete(variety, 
            date, 
-           fill = list(daily_harvest_lb = 0)) 
+           fill = list(daily_harvest_lb = 0)) %>% 
+  mutate(variety = fct_reorder(variety, daily_harvest_lb, sum)) %>%
+  group_by(variety) %>% 
+  mutate(cumsum_tomato = cumsum(daily_harvest_lb))  #1. which variable do you want to reorder, 2. by which variable, function you want to use?
+
+  
 
 ```
 
-```{r}
+```{r, alt.fig = "Here is some text"}
 daily_tomato %>% 
-  ggplot(aes(x = date, y = daily_harvest_lb)) + 
-  geom_area(aes(fill = variety)) +
-  transition_states(variety)
+ggplot(aes(x = date, y = cumsum_tomato, fill = variety)) + 
+  geom_area() +
+  geom_text(aes(label = variety), position = "stack") +
+  labs(title = "Tomato Time: Cumulative Harvest in Pounds Over Time",
+       subtitle = "Date: {frame_along}",
+       x = "",
+       y = "") +
+  theme(legend.position = "none") +
+  transition_reveal(date) 
+  
+
+#transition date only shows what happens on a specific date; transition reveal shows progression
 ```
 
 ## Maps, animation, and movement!
@@ -199,12 +213,31 @@ daily_tomato %>%
   * CHALLENGE: use the `ggimage` package and `geom_image` to add a bike image instead of a red point. You can use [this](https://raw.githubusercontent.com/llendway/animation_and_interactivity/master/bike.png) image. See [here](https://goodekat.github.io/presentations/2019-isugg-gganimate-spooky/slides.html#35) for an example. 
   * Add something of your own! And comment on if you prefer this to the static map and why or why not.
   
-```{r}
+```{r, fig.alt= "Mallorca Map chat!"}
 mallorca_map <- get_stamenmap(
   bbox = c( left = 2.1629, bottom = 39.2248, right = 3.6598, top = 40.0013),
   maptype = "terrain",
-  zoom = 2
-)
+  zoom = 11)
+
+ggmap(mallorca_map) +
+  geom_path(data = mallorca_bike_day7,
+            aes(x = lon,
+                y = lat, 
+                color = ele),
+            size = 1) +
+  geom_point(data = mallorca_bike_day7,
+             aes(x = lon, 
+                 y = lat),
+             size = 2,
+             color = "red") +
+  scale_color_viridis_c(option = "magma") +
+  theme_map() +
+  labs(title = "Lisa's Mallorca Bike Ride: More Elevated Than Ever Before", 
+       subtitle =  "Time: {closest_state}",
+       x = "",
+       y = "")
+  theme(legend.background = "none") +
+  transition_reveal(time)
 
 ```
   
