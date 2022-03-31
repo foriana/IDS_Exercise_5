@@ -152,7 +152,14 @@ ggplotly(waddles,
 ```{r}
 
 small_trains %>% 
-  ggplot(aes(x = ))
+  mutate(je_suis_desolee = num_arriving_late/total_num_trips) %>%
+  filter(service == "International") %>% 
+  ggplot(aes(y = fct_reorder(departure_station, je_suis_desolee))) +
+  geom_bar() + 
+  labs(title = "International Train Service in France",
+      y = "",
+      x = "Total Number of Trips from Each Station") 
+
 
 
 
@@ -233,10 +240,10 @@ ggmap(mallorca_map) +
   scale_color_viridis_c(option = "magma") +
   theme_map() +
   labs(title = "Lisa's Mallorca Bike Ride: More Elevated Than Ever Before", 
-       subtitle =  "Time: {closest_state}",
+       subtitle =  "Date: {frame_along}",
        x = "",
-       y = "")
-  theme(legend.background = "none") +
+       y = "") +
+  theme(legend.background = element_blank()) +
   transition_reveal(time)
 
 ```
@@ -245,14 +252,14 @@ ggmap(mallorca_map) +
   
 ```{r}
 panama_map <- get_stamenmap(
-  bbox = c( left = 13.966, bottom = 2.789, right = -69.873, top = 13.966),
+  bbox = c( left = -79.6866, bottom = 8.8254, right = -79.4817, top = 8.9966),
   maptype = "terrain",
-  zoom = 5)
+  zoom = 11)
 
 panama_heather <- bind_rows(list(panama_swim, panama_bike, panama_run))
 ```
   
-```{r}
+```{r, fig.alt= "The Heather description"}
 ggmap(panama_map) +
   geom_path(data = panama_heather,
             aes(x = lon,
@@ -261,11 +268,12 @@ ggmap(panama_map) +
             size = 1) +
   geom_point(data = panama_heather,
              aes(x = lon, 
-                 y = lat),
-             size = 2,
-             color = event) +
-  scale_color_viridis_c(option = "magma") +
-  theme_map() 
+                 y = lat,
+                 color = event),
+             size = 4) +
+
+  theme_map() +
+  transition_reveal(time)
 
 
 
@@ -287,7 +295,27 @@ census_pop_est_2018 <- read_csv("https://www.dropbox.com/s/6txwv3b4ng7pepe/us_ce
   select(-dot) %>% 
   mutate(state = str_to_lower(state))
 
+covid19_states <- covid19 %>% 
+  group_by(state) %>% 
+  summarise(cases = last(cases)) %>% 
+  mutate(state = str_to_lower(`state`))
+
 states_map <- map_data("state")
+```
+
+
+```{r, fig.alt="write something here"}
+covid19_states %>% 
+  filter(date(day((15)) %>% 
+  ggplot() +
+  geom_map(map = states_map,
+           aes(map_id = state,
+               fill = cases)) +
+  expand_limits(x = states_map$long, y = states_map$lat) + 
+  labs(title = "COVID-19 Cases in the United States") + 
+  theme_map() + 
+  theme(legend.background = element_blank()) 
+  
 ```
 
 ## Your first `shiny` app (for next week!)
