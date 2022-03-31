@@ -295,40 +295,46 @@ census_pop_est_2018 <- read_csv("https://www.dropbox.com/s/6txwv3b4ng7pepe/us_ce
   select(-dot) %>% 
   mutate(state = str_to_lower(state))
 
-covid19_states <- covid19 %>% 
-  group_by(state) %>% 
-  summarise(cases = last(cases)) %>% 
-  mutate(state = str_to_lower(`state`))
-
 states_map <- map_data("state")
+
+covid19_states <- covid19 %>% 
+  arrange(desc(date)) %>% 
+  group_by(state) %>%
+  #summarise(cases = last(cases)) %>% #this works, but doesn't keep the date (needed later)
+  mutate(numberrow = 1:n(), #find out what this means in depth
+    state = str_to_lower(`state`))
+
 
 covid_19_state_populations <- covid19_states %>% 
   left_join(census_pop_est_2018,
-            by = c("state" = "state"))
+            by = c("state" = "state")) %>% 
+  mutate(covid_per_10000 = (cases/est_pop_2018)*10000)
 
-modified_covid19 <- covid_19_state_populations %>% 
-  mutate(covid_prop = cases/est_pop_2018)  
+covid_day_15 <- covid_19_state_populations %>% 
+   filter(day(date) == 15)
+  
+ 
 ```
 
 
 ```{r, fig.alt="write something here"}
-covid19 %>% 
-  filter(day(date) == 15) %>% 
-  mutate(state = str_to_lower(state)) %>% 
-  left_join(census_pop_est_2018,
-            by = c("state" = "state")) %>% 
-  mutate(covid_prop = cases/est_pop_2018) %>% 
+us_pandemic <- covid_day_15 %>% 
   ggplot() +
   geom_map(map = states_map,
            aes(map_id = state,
-               fill = covid_prop)) +
+               fill = covid_per_10000,
+               group = date)) + #find out why group = date
   expand_limits(x = states_map$long, y = states_map$lat) + 
   labs(title = "COVID-19 Cases in the United States",
-       subtitle = "Date: {frame_time}") + 
+       subtitle = "Date: {closest_state}",
+       fill = "Cases per 10,000 people") + 
+  
   theme_map() + 
   theme(legend.background = element_blank()) +
-  transition_reveal(covid_prop,
-                    state_length = 10)
+  transition_states(date, transition_length = 0)
+                      #state_length = 10)
+  
+  animate(us_pandemic, nframes = 200, end_pause = 10)
   
 ```
 
