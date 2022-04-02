@@ -199,7 +199,7 @@ daily_tomato <- garden_harvest %>%
 
 ```
 
-```{r, alt.fig = "Here is some text"}
+```{r}
 daily_tomato %>% 
 ggplot(aes(x = date, y = cumsum_tomato, fill = variety)) + 
   geom_area() +
@@ -210,11 +210,15 @@ ggplot(aes(x = date, y = cumsum_tomato, fill = variety)) +
        y = "") +
   theme(legend.position = "none") +
   transition_reveal(date) 
+
+anim_save("Q3tomatoharvest.gif")
   
 
 #transition date only shows what happens on a specific date; transition reveal shows progression
 ```
-
+```{r, alt.fig = "This is a gift showing the cumulative harvest over time of Professor Lendway's different tomato varieties. Jet Star is on the top."}
+knitr::include_graphics("Q3tomatoharvest.gif")
+```
 ## Maps, animation, and movement!
 
   4. Map Lisa's `mallorca_bike_day7` bike ride using animation! 
