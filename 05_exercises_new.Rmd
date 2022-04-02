@@ -276,7 +276,7 @@ panama_map <- get_stamenmap(
 panama_heather <- bind_rows(list(panama_swim, panama_bike, panama_run))
 ```
   
-```{r, fig.alt= "The Heather description"}
+```{r}
 ggmap(panama_map) +
   geom_path(data = panama_heather,
             aes(x = lon,
@@ -292,10 +292,16 @@ ggmap(panama_map) +
   theme_map() +
   transition_reveal(time)
 
+anim_save("Q5panamaheather.gif")
+
 
 
 ```
   
+```{r, fig.alt= "This is a gif showing Heather's Ironman 70.3 Pan Am Championships in which she swims, bikes, and runs. Each leg of her race is shown in a different color."}
+
+knitr::include_graphics("Q5panamaheather.gif")
+```
 ## COVID-19 data
 
   6. In this exercise you will animate a map of the US, showing how cumulative COVID-19 cases per 10,000 residents has changed over time. This is similar to exercises 11 & 12 from the previous exercises, with the added animation! So, in the end, you should have something like the static map you made there, but animated over all the days. The code below gives the population estimates for each state and loads the `states_map` data. Here is a list of details you should include in the plot:
@@ -303,8 +309,10 @@ ggmap(panama_map) +
   * Put date in the subtitle.   
   * Because there are so many dates, you are going to only do the animation for the the 15th of each month. So, filter only to those dates - there are some lubridate functions that can help you do this.   
   * Use the `animate()` function to make the animation 200 frames instead of the default 100 and to pause for 10 frames on the end frame.   
-  * Use `group = date` in `aes()`. #what does this mean?  
+  * Use `group = date` in `aes()`.  
   * Comment on what you see.  
+  
+  __I see__
 
 ```{r}
 census_pop_est_2018 <- read_csv("https://www.dropbox.com/s/6txwv3b4ng7pepe/us_census_2018_state_pop_est.csv?dl=1") %>% 
@@ -334,7 +342,7 @@ covid_day_15 <- covid_19_state_populations %>%
 ```
 
 
-```{r, fig.alt="write something here"}
+```{r"}
 us_pandemic <- covid_day_15 %>% 
   ggplot() +
   geom_map(map = states_map,
@@ -351,10 +359,15 @@ us_pandemic <- covid_day_15 %>%
   transition_states(date, transition_length = 0)
                       #state_length = 10)
   
-  animate(us_pandemic, nframes = 200, end_pause = 10)
+animate(us_pandemic, nframes = 200, end_pause = 10)
+  
+anim_save("Q6pandemictide.gif")
   
 ```
+```{r, fig.alt="This gif shows the United States' cumulative COVID-19 cases per 10,000 residents as it changes over time." }
+knitr::include_graphics("Q6pandemictide.gif")
 
+```
 ## Your first `shiny` app (for next week!)
 
   7. This app will also use the COVID data. Make sure you load that data and all the libraries you need in the `app.R` file you create. You should create a new project for the app, separate from the homework project. Below, you will post a link to the app that you publish on shinyapps.io. You will create an app to compare states' daily number of COVID cases per 100,000 over time. The x-axis will be date. You will have an input box where the user can choose which states to compare (`selectInput()`), a slider where the user can choose the date range, and a submit button to click once the user has chosen all states they're interested in comparing. The graph should display a different line for each state, with labels either on the graph or in a legend. Color can be used if needed. 
