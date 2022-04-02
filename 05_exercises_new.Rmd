@@ -142,7 +142,7 @@ ggplotly(single_parent_only_child_household_games_lol,
 
 ```
  
-```{r, fig.alt = more text text text}
+```{r, fig.alt = "An interactive graph showing penguin bill lengths and a red dotted line showing the median penguin bill length around 45 mm."}
 ggplotly(waddles,
          tooltip = c("text", "x"))
 ```
@@ -152,17 +152,24 @@ ggplotly(waddles,
 ```{r}
 
 small_trains %>% 
-  mutate(je_suis_desolee = num_arriving_late/total_num_trips) %>%
   filter(service == "International") %>% 
-  ggplot(aes(y = fct_reorder(departure_station, je_suis_desolee))) +
-  geom_bar() + 
-  labs(title = "International Train Service in France",
-      y = "",
-      x = "Total Number of Trips from Each Station") 
+  ggplot(aes(x = delayed_number, 
+             y = delay_cause,
+             group = year)) +
+  geom_jitter() + 
+  labs(title = "International Train Service in France and Causes for Delay",
+       subtitle = "Year: {frame_time}",
+       y = "",
+       x = "Percent of trains delayed") +
+  transition_time(year)
+
+anim_save("Q2frenchtrains.gif")
 
 
+```
 
-
+```{r, fig.alt= "This gif shows the percent of different types of delays international train service in France face over the years. Overall, traffic management seems to be a consistently high cause of trian delays. }
+knitr::include_graphics("Q2frenchtrains.gif")
 ```
 
 ## Garden data
