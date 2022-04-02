@@ -342,7 +342,7 @@ covid_day_15 <- covid_19_state_populations %>%
 ```
 
 
-```{r"}
+```{r}
 us_pandemic <- covid_day_15 %>% 
   ggplot() +
   geom_map(map = states_map,
@@ -365,6 +365,7 @@ anim_save("Q6pandemictide.gif")
   
 ```
 ```{r, fig.alt="This gif shows the United States' cumulative COVID-19 cases per 10,000 residents as it changes over time." }
+
 knitr::include_graphics("Q6pandemictide.gif")
 
 ```
