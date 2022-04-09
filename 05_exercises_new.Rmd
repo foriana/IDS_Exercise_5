@@ -168,7 +168,7 @@ anim_save("Q2frenchtrains.gif")
 
 ```
 
-```{r, fig.alt= "This gif shows the percent of different types of delays international train service in France face over the years. Overall, traffic management seems to be a consistently high cause of trian delays. }
+```{r, fig.alt= "This gif shows the percent of different types of delays international train service in France face over the years. Overall, traffic management seems to be a consistently high cause of trian delays." }
 knitr::include_graphics("Q2frenchtrains.gif")
 ```
 
