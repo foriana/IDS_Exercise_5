@@ -374,10 +374,78 @@ knitr::include_graphics("Q6pandemictide.gif")
   7. This app will also use the COVID data. Make sure you load that data and all the libraries you need in the `app.R` file you create. You should create a new project for the app, separate from the homework project. Below, you will post a link to the app that you publish on shinyapps.io. You will create an app to compare states' daily number of COVID cases per 100,000 over time. The x-axis will be date. You will have an input box where the user can choose which states to compare (`selectInput()`), a slider where the user can choose the date range, and a submit button to click once the user has chosen all states they're interested in comparing. The graph should display a different line for each state, with labels either on the graph or in a legend. Color can be used if needed. 
   
 Put the link to your app here: 
+
+__I couldn't get the shiny to work :(__
+
+Here was my code: 
+library(tidyverse)     
+library(lubridate)     
+library(shiny)         
+library(babynames)
+covid19 <- read_csv("https://raw.githubusercontent.com/nytimes/covid-19-data/master/us-states.csv")
+
+
+
+ui <- fluidPage("United States' daily number of COVID-19 cases per 100,000 people over time.",
+  sliderInput(inputId = "date", 
+              label = "Date Range",
+              min = as.Date(min(covid19$date)), 
+              max = as.Date(max(covid19$date)), 
+              value = c(as.Date(min(covid19$date)), as.Date(max(covid19$date)))),
+  #textInput("name", 
+          #  "Name", 
+          #  value = "", 
+           # placeholder = "Lisa"),
+  selectInput(inputId = "state", 
+              label = "State", 
+              choices = unique(covid19$state)),
+  submitButton(text = "Compare                        Selected States"),
+  plotOutput(outputId = "covidplot")
+)
+
+server <- function(input, output) {
+  
+  output$covidplot <- renderPlot({ 
+    covid19 <- read_csv("https://raw.githubusercontent.com/nytimes/covid-19-data/master/us-states.csv")
+    
+    covid19 <- covid19 %>% 
+      group_by(state) %>% 
+      summarise(cases = last(cases)) %>% 
+      mutate(state = str_to_lower(`state`))
+   
+     census_pop_est_2018 <- read_csv("https://www.dropbox.com/s/6txwv3b4ng7pepe/us_census_2018_state_pop_est.csv?dl=1") %>% 
+      separate(state, into = c("dot","state"), extra = "merge") %>% 
+      select(-dot) %>% 
+      mutate(state = str_to_lower(state))
+    
+     covid_19_state_populations <- covid19_states %>% 
+      left_join(census_pop_est_2018,
+                by = c("state" = "state"))
+     
+     modified_covid19 <- covid_19_state_populations %>% 
+       mutate(covid_prop = cases/est_pop_2018)  
+     
+    modified_covid19 %>% 
+      #old code
+      #filter(state %in% state) %>% 
+      #new code - you forgot input$
+      filter(state %in% input$state) %>% 
+      ggplot() +
+      #old code
+      #geom_line(aes(x = date, y = case), color = state) +
+      #new code - you had case instead of cases and color was outside of aes()
+      geom_line(aes(x = date, y = cases, color = state)) +
+      scale_x_continuous(limits = input$date) +
+      theme_minimal()
+  })
+}
+
+shinyApp(ui = ui, server = server)
   
 ## GitHub link
 
   8. Below, provide a link to your GitHub repo with this set of Weekly Exercises. 
 
+[The beleaguered GitHub link](https://github.com/foriana/IDS_Exercise_5.git)
 
 **DID YOU REMEMBER TO UNCOMMENT THE OPTIONS AT THE TOP?**
